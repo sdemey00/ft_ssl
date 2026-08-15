@@ -4,7 +4,8 @@ int main(int ac, char **av) {
   t_context ctx;
 
   init_context(&ctx);
-  return (dispatch_command(&ctx, ac - 1, av + 1));
+  dispatch_command(&ctx, ac - 1, av + 1);
+  return (0);
 }
 
 // commands: md5 sha256
@@ -14,13 +15,6 @@ int main(int ac, char **av) {
 // -p stdin echo rule
 // -s string labeling
 
-// For each command:
-// md5_handler(ctx, args)
-//     ↓
-// parse flags (-p -q -r -s)
-//     ↓
-// build input list
-//     ↓
-// for each input:
-//     compute hash
-//     format output
+// t_hash_module = table of each hash module -> init/update/final/digest_size
+// one generic handler (e.g. in core/ or cli/) takes a t_hash_module * and does the parse -> read -> hash -> format -> print pipeline once
+// md5_handler/sha256_handler collapse into thin wrappers (or disappear entirely, dispatch_command looks up the module by name in the registry and calls the generic handler directly)

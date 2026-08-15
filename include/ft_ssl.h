@@ -5,20 +5,21 @@
 # include <stddef.h>
 # include <stdint.h>
 
+#ifndef VERBOSE
+# define VERBOSE 0
+#endif
+#if VERBOSE
+# define DEBUG_PRINT(...) dprintf(2, __VA_ARGS__)
+#else
+# define DEBUG_PRINT(...) ((void)0)
+#endif
+
 typedef struct s_context {
   bool quiet;
   bool reverse;
   bool print_stdin;
   bool saw_input;
 } t_context;
-
-// command handler signature
-typedef void (*t_cmd_handler)(t_context *ctx, int ac, char **av);
-
-typedef struct s_command {
-  char          *name;
-  t_cmd_handler handler;
-} t_command;
 
 typedef struct s_input
 {
@@ -47,16 +48,19 @@ typedef struct s_hash_module
     void    (*final)(void *state, uint8_t *out);
 
     size_t  digest_size;
+    size_t  state_size;
 }   t_hash_module;
 
 // CORE
 int     dispatch_command(t_context *ctx, int argc, char **argv);
 void    init_context(t_context *ctx);
-void    print_usage(void);
+void    help(void);
 
-// CMD
-void    md5_handler(t_context *ctx, int argc, char **argv);
-void    sha256_handler(t_context *ctx, int argc, char **argv);
+// REGISTRY
+t_hash_module   *get_hash_module(char *name);
+
+// HASH
+void            hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv);
 
 // PARSER
 int     parse_args(t_context *ctx, int argc, char **argv, t_exec *exec);

@@ -2,17 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void    execute_sha256(t_context *ctx, t_exec *exec) {
-    (void)ctx;
-    (void)exec;
-    printf("sha256 command reached\n");
+void    sha256_init(void *state){
+    (void)state;
 }
 
-void    sha256_handler(t_context *ctx, int argc, char **argv) {
-    t_exec  exec;
+void    sha256_update(void *state, const uint8_t *data, size_t len){
+    (void)state; (void)data; (void)len;
+}
 
-    if (parse_args(ctx, argc, argv, &exec))
-        return;
-    execute_sha256(ctx, &exec);
-    free(exec.inputs);
+void    sha256_final(void *state, uint8_t *out){
+    (void)state; (void)out;
 }

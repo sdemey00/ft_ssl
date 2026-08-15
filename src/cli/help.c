@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void  print_usage(void) {
+void  help(void) {
     dprintf(2, "usage: ft_ssl command [flags] [file/string]\n");
     dprintf(2, "\nCommands:\n");
     dprintf(2, "md5\n");

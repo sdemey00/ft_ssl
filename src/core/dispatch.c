@@ -1,46 +1,27 @@
 #include "ft_ssl.h"
 #include <string.h>
-# include <stdio.h>
-
-static t_command g_commands[] =
-{
-    {"md5", md5_handler},
-    {"sha256", sha256_handler},
-    {NULL, NULL}
-};
-
-static t_cmd_handler find_command(char *name)
-{
-    int i = 0;
-
-    while (g_commands[i].name)
-    {
-        if (strcmp(g_commands[i].name, name) == 0)
-            return (g_commands[i].handler);
-        i++;
-    }
-    return NULL;
-}
+#include <unistd.h>
 
 int dispatch_command(t_context *ctx, int argc, char **argv)
 {
-    t_cmd_handler handler;
+    t_hash_module *mod;
 
     if (argc < 1)
     {
-        print_usage();
-        return 1;
-    }
-
-    handler = find_command(argv[0]);
-    if (!handler)
-    {
-        dprintf(2, "ft_ssl: Error: '%s' is an invalid command.\n", argv[0]);
-        dprintf(2, "\nCommands:\nmd5\nsha256\n");
-        dprintf(2, "\nFlags:\n-p -q -r -s\n");
+        help();
         return (1);
     }
-
-    handler(ctx, argc - 1, argv + 1);
+    if (strcmp(argv[0], "help") == 0)
+    {
+        help();
+        return (0);
+    }
+    mod = get_hash_module(argv[0]);
+    if (!mod)
+    {
+        // dprintf(2, "Invalid command '%s'; type \"help\" for a list.\n", argv[0]);
+        return (1);
+    }
+    hash_handler(ctx, mod, argc - 1, argv + 1);
     return (0);
 }

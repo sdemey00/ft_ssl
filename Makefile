@@ -3,7 +3,9 @@ NAME	= ft_ssl
 
 # Source program compiler settings
 CC		= cc
-FLAGS	= -Wall -Wextra -Werror -g -D VERBOSE=$(V)
+FLAGS	= -Wall -Wextra -Werror -g -DVERBOSE=$(V)
+
+V ?= 0
 
 # Directories
 BLDD	= build
@@ -47,5 +49,8 @@ san: all
 valgrind:
 	valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./$(NAME) $(F)
 
+verbose: fclean
+	$(MAKE) V=1
+	
 clear:
 	rm -rf $(BLDD)

@@ -2,17 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void    execute_md5(t_context *ctx, t_exec *exec) {
-    (void)ctx;
-    (void)exec;
-    printf("md5 command reached\n");
+void    md5_init(void *state){
+    (void)state;
 }
 
-void    md5_handler(t_context *ctx, int argc, char **argv) {
-    t_exec  exec;
+void    md5_update(void *state, const uint8_t *data, size_t len){
+    (void)state; (void)data; (void)len;
+}
 
-    if (parse_args(ctx, argc, argv, &exec))
-        return;
-    execute_md5(ctx, &exec);
-    free(exec.inputs);
+void    md5_final(void *state, uint8_t *out){
+    (void)state; (void)out;
 }
