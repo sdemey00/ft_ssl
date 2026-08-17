@@ -1,19 +1,14 @@
 #include "ft_ssl.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 
-uint8_t *read_stdin(size_t *len);
-uint8_t *read_string(char *s, size_t *len);
-uint8_t *read_file(char *path, size_t *len);
-
-uint8_t *read_input(t_input *in, size_t *len)
+t_read_status read_input(t_input *in, uint8_t **out, size_t *len)
 {
     if (in->e_type == INPUT_STDIN)
-        return (read_stdin(len));
+        return (read_stdin(out, len));
     if (in->e_type == INPUT_FILE)
-        return (read_file(in->value, len));
+        return (read_file(in->value, out, len));
     if (in->e_type == INPUT_STRING)
-        return (read_string(in->value, len));
-    return NULL;
+        return (read_string(in->value, out, len));
+    *out = NULL;
+    *len = 0;
+    return (READ_ERR_OPEN);
 }

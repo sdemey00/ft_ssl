@@ -4,6 +4,8 @@
 # include <stdbool.h>
 # include <stddef.h>
 # include <stdint.h>
+# include <unistd.h>
+# include <stdio.h>
 
 #ifndef VERBOSE
 # define VERBOSE 0
@@ -64,5 +66,20 @@ void            hash_handler(t_context *ctx, t_hash_module *mod, int argc, char 
 
 // PARSER
 int     parse_args(t_context *ctx, int argc, char **argv, t_exec *exec);
+
+typedef enum e_read_status
+{
+    READ_OK,
+    READ_ERR_OPEN,
+    READ_ERR_ALLOC
+}   t_read_status;
+
+// INPUT
+/* every reader returns a status and writes the buffer via an out-param. On error, *out is guaranteed NULL adn *len is 0. No uninitialized reads possible.*/
+t_read_status   read_input(t_input *in, uint8_t **out, size_t *len);
+t_read_status   read_file(char *path, uint8_t **out, size_t *len);
+t_read_status   read_stdin(uint8_t **out, size_t *len);
+t_read_status   read_string(char *s, uint8_t **out, size_t *len);
+t_read_status   read_fd(int fd, uint8_t **out, size_t *len);
 
 # endif

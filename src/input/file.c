@@ -1,11 +1,20 @@
 #include "ft_ssl.h"
-#include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
+#include <unistd.h>
 
-uint8_t *read_file(char *path, size_t *len)
+t_read_status read_file(char *path, uint8_t **out, size_t *len)
 {
-    (void)path; (void)len;
-    return (0);
+    int             fd;
+    t_read_status   status;
+
+    fd = open(path, O_RDONLY);
+    if (fd < 0)
+    {
+        *out = NULL;
+        *len = 0;
+        return (READ_ERR_OPEN);
+    }
+    status = read_fd(fd, out, len);
+    close(fd);
+    return (status);
 }

@@ -19,9 +19,11 @@ int dispatch_command(t_context *ctx, int argc, char **argv)
     mod = get_hash_module(argv[0]);
     if (!mod)
     {
-        // dprintf(2, "Invalid command '%s'; type \"help\" for a list.\n", argv[0]);
+        DEBUG_PRINT("dispatch: unknown command \"%s\"\n", argv[0]);
+        dprintf(2, "Invalid command '%s'; type \"help\" for a list.\n", argv[0]);
         return (1);
     }
+    DEBUG_PRINT("dispatch: resolved \"%s\" -> module\n", argv[0]);
     hash_handler(ctx, mod, argc - 1, argv + 1);
     return (0);
 }

@@ -17,8 +17,12 @@ t_hash_module *get_hash_module(char *name)
     while (g_modules[i].name)
     {
         if (strcmp(g_modules[i].name, name) == 0)
+        {
+            DEBUG_PRINT("registry: found module \"%s\"\n", name);
             return (&g_modules[i]);
+        }
         i++;
     }
+    DEBUG_PRINT("registry: no module named \"%s\"\n", name);
     return (NULL);
 }

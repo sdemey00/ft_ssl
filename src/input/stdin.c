@@ -1,10 +1,6 @@
 #include "ft_ssl.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 
-uint8_t *read_stdin(size_t *len)
+t_read_status read_stdin(uint8_t **out, size_t *len)
 {
-    (void)len;
-    return (0);
+    return (read_fd(0, out, len));
 }
