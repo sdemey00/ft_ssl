@@ -8,11 +8,12 @@ int dispatch_command(t_context *ctx, int argc, char **argv)
 
     if (argc < 1)
     {
-        help();
+        usage();
         return (1);
     }
     if (strcmp(argv[0], "help") == 0)
     {
+        usage();
         help();
         return (0);
     }
@@ -20,7 +21,8 @@ int dispatch_command(t_context *ctx, int argc, char **argv)
     if (!mod)
     {
         DEBUG_PRINT("dispatch: unknown command \"%s\"\n", argv[0]);
-        dprintf(2, "Invalid command '%s'; type \"help\" for a list.\n", argv[0]);
+        dprintf(2, "ft_ssl: Error: '%s' is an invalid command.\n", argv[0]);
+        help();
         return (1);
     }
     DEBUG_PRINT("dispatch: resolved \"%s\" -> module\n", argv[0]);

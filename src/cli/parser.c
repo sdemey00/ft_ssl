@@ -76,16 +76,16 @@ static t_flag *find_flag(char *name)
 
 int parse_args(t_context *ctx, int argc, char **argv, t_exec *exec)
 {
-    int     i;
+    int     i = 0;
     t_flag  *flag;
+    bool    stop_flags = false;
     char    *arg;
 
-    i = 0;
     exec->inputs = NULL;
     exec->count = 0;
     while (i < argc)
     {
-        flag = find_flag(argv[i]);
+        flag = stop_flags ? NULL : find_flag(argv[i]);
         if (flag)
         {
             arg = NULL;
@@ -93,7 +93,6 @@ int parse_args(t_context *ctx, int argc, char **argv, t_exec *exec)
             {
                 if (i + 1 >= argc)
                 {
-                    DEBUG_PRINT("parse: %s missing argument\n", flag->name);
                     dprintf(2, "ft_ssl: missing string for %s\n", flag->name);
                     return (1);
                 }
@@ -101,21 +100,16 @@ int parse_args(t_context *ctx, int argc, char **argv, t_exec *exec)
             }
             if (!flag->handler(ctx, exec, arg))
                 return (1);
-            DEBUG_PRINT("parse: %s\n", flag->name);
         }
         else
         {
+            stop_flags = true;
             if (!add_input(exec, (t_input){INPUT_FILE, argv[i]}))
                 return (1);
-            DEBUG_PRINT("parse: file -> \"%s\"\n", argv[i]);
         }
         i++;
     }
     if (exec->count == 0)
-    {
-        if (!add_input(exec, (t_input){INPUT_STDIN, NULL}))
-            return (1);
-        DEBUG_PRINT("parse: no input given -> defaulting to stdin\n");
-    }
+        add_input(exec, (t_input){INPUT_STDIN, NULL});
     return (0);
 }

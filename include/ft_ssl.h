@@ -57,6 +57,7 @@ typedef struct s_hash_module
 int     dispatch_command(t_context *ctx, int argc, char **argv);
 void    init_context(t_context *ctx);
 void    help(void);
+void    usage(void);
 
 // REGISTRY
 t_hash_module   *get_hash_module(char *name);
@@ -65,7 +66,7 @@ t_hash_module   *get_hash_module(char *name);
 void            hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv);
 
 // PARSER
-int     parse_args(t_context *ctx, int argc, char **argv, t_exec *exec);
+int             parse_args(t_context *ctx, int argc, char **argv, t_exec *exec);
 
 typedef enum e_read_status
 {
