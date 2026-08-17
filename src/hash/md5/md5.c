@@ -14,10 +14,6 @@ static const uint32_t g_r[64] =
     6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
 };
 
-/*
-for (int i = 0; i < 64; i++)
-    k[i] := floor(abs(sin(i + 1)) × 2^32)
-*/
 static const uint32_t g_k[64] =
 {
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,

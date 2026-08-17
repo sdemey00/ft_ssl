@@ -8,7 +8,7 @@
 
 typedef struct s_sha256_ctx
 {
-    uint32_t    state[4];
+    uint32_t    state[8];
     uint64_t    bitlen;
     uint8_t     buffer[64];
     size_t      buffer_len;
