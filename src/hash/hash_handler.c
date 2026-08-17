@@ -24,11 +24,14 @@ void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
     {
         size_t        len;
         uint8_t       *data;
+        const char    *label;
         t_read_status status = read_input(&exec.inputs[i], &data, &len);
-        DEBUG_PRINT("hash: input[%d] type=%d status=%d len=%zu\n", i, exec.inputs[i].e_type, status, len);
+
+        label = exec.inputs[i].value ? exec.inputs[i].value : "stdin";
+        DEBUG_PRINT("hash: input[%d] (%s): read_status=%d, bytes=%zu\n", i, label, status, len);
         if (status != READ_OK)
         {
-            dprintf(2, "ft_ssl: %s: %s\n", exec.inputs[i].value ? exec.inputs[i].value : "stdin",
+            dprintf(2, "ft_ssl: %s: %s\n", label,
                     status == READ_ERR_OPEN ? "No such file or directory" : "malloc error");
             i++;
             continue;
@@ -37,7 +40,7 @@ void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
         mod->update(state, data, len);
         mod->final(state, out);
         print_digest(ctx, mod, &exec.inputs[i], data, len, out);
-        DEBUG_PRINT("hash: input[%d] digest computed (%zu bytes)\n", i, mod->digest_size);
+        DEBUG_PRINT("hash: input[%d] (%s): digest complete for %zu input bytes\n", i, label, len);
         free(data);
         i++;
     }

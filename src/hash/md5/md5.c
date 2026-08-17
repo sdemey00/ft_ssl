@@ -100,18 +100,6 @@ static void md5_compress(t_md5_ctx *ctx, const uint8_t *block)
     ctx->state[3] += d;
 }
 
-
-void    md5_init(void *state){
-    t_md5_ctx *ctx = (t_md5_ctx *)state;
-
-    ctx->state[0] = 0x67452301;
-    ctx->state[1] = 0xefcdab89;
-    ctx->state[2] = 0x98badcfe;
-    ctx->state[3] = 0x10325476;
-    ctx->bitlen = 0;
-    ctx->buffer_len = 0;
-}
-
 // buffers + compresses, without touching bitlen (used only during padding)
 static void md5_update_raw(t_md5_ctx *ctx, const uint8_t *data, size_t len)
 {
@@ -122,11 +110,24 @@ static void md5_update_raw(t_md5_ctx *ctx, const uint8_t *data, size_t len)
         ctx->buffer[ctx->buffer_len++] = data[i++];
         if (ctx->buffer_len == 64)
         {
-            DEBUG_PRINT("md5: compressing full block\n");
+            DEBUG_PRINT("md5: compressing block #%zu (64-byte chunk)\n", ctx->debug_blocks);
             md5_compress(ctx, ctx->buffer);
             ctx->buffer_len = 0;
+            ctx->debug_blocks++;
         }
     }
+}
+
+void    md5_init(void *state){
+    t_md5_ctx *ctx = (t_md5_ctx *)state;
+
+    ctx->state[0] = 0x67452301;
+    ctx->state[1] = 0xefcdab89;
+    ctx->state[2] = 0x98badcfe;
+    ctx->state[3] = 0x10325476;
+    ctx->bitlen = 0;
+    ctx->buffer_len = 0;
+    ctx->debug_blocks = 0;
 }
 
 void md5_update(void *state, const uint8_t *data, size_t len)
@@ -135,7 +136,7 @@ void md5_update(void *state, const uint8_t *data, size_t len)
 
     md5_update_raw(ctx, data, len);
     ctx->bitlen += (uint64_t)len * 8;
-    DEBUG_PRINT("md5_update: +%zu bytes, bitlen now %lu, buffer_len=%zu\n", len, ctx->bitlen, ctx->buffer_len);
+    DEBUG_PRINT("md5: received %zu bytes; bitlen=%lu; buffer_len=%zu\n", len, ctx->bitlen, ctx->buffer_len);
 }
 
 void md5_final(void *state, uint8_t *out)
@@ -146,15 +147,12 @@ void md5_final(void *state, uint8_t *out)
     uint8_t   zero = 0x00;
     int       i;
 
-    // append the '1' bit (as a full 0x80 byte, since we work byte-aligned)
-    DEBUG_PRINT("md5_final: original bitlen=%lu, leftover buffer_len=%zu\n", bitlen, ctx->buffer_len);
+    DEBUG_PRINT("md5: finalizing message with original bitlen=%lu, buffer_len=%zu\n", bitlen, ctx->buffer_len);
     md5_update_raw(ctx, &pad, 1);
-    DEBUG_PRINT("md5_final: appended 0x80, buffer_len now %zu\n", ctx->buffer_len);
-    // pad with zero bytes until buffer_len == 56 (i.e. 448 bits mod 512)
+    DEBUG_PRINT("md5: finalizing message with padding, buffer_len=%zu\n", ctx->buffer_len);
     while (ctx->buffer_len != 56)
         md5_update_raw(ctx, &zero, 1);
-    DEBUG_PRINT("md5_final: zero-padded to buffer_len=56\n");
-    // append original bit-length, 64-bit little-endian
+    DEBUG_PRINT("md5: padding complete; buffer_len=%zu before length suffix\n", ctx->buffer_len);
     i = 0;
     while (i < 8)
     {
@@ -162,7 +160,6 @@ void md5_final(void *state, uint8_t *out)
         md5_update_raw(ctx, &b, 1);
         i++;
     }
-    // serialize state, little-endian, into out[]
     i = 0;
     while (i < 4)
     {
@@ -172,5 +169,5 @@ void md5_final(void *state, uint8_t *out)
         out[i * 4 + 3] = (uint8_t)(ctx->state[i] >> 24);
         i++;
     }
-    DEBUG_PRINT("md5_final: digest = %02x%02x%02x%02x...\n", out[0], out[1], out[2], out[3]);
+    DEBUG_PRINT("md5: final digest prefix=%02x%02x%02x%02x\n", out[0], out[1], out[2], out[3]);
 }

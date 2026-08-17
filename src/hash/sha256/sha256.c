@@ -135,6 +135,23 @@ static void sha256_compress(t_sha256_ctx *ctx, const uint8_t *block)
     ctx->state[7] += h;
 }
 
+static void sha256_update_raw(t_sha256_ctx *ctx, const uint8_t *data, size_t len) {
+    size_t i = 0;
+
+    while (i < len)
+    {
+        ctx->buffer[ctx->buffer_len++] = data[i++];
+        if (ctx->buffer_len == 64)
+        {
+            DEBUG_PRINT("sha256: compressing block #%zu (64-byte chunk)\n",
+                        ctx->debug_blocks);
+            sha256_compress(ctx, ctx->buffer);
+            ctx->debug_blocks++;
+            ctx->buffer_len = 0;
+        }
+    }
+}
+
 /*
 MD5                         SHA-256
 ------------------------------------------------
@@ -159,24 +176,9 @@ void sha256_init(void *state)
     ctx->state[5] = 0x9b05688c;
     ctx->state[6] = 0x1f83d9ab;
     ctx->state[7] = 0x5be0cd19;
-
     ctx->bitlen = 0;
     ctx->buffer_len = 0;
-}
-
-static void sha256_update_raw(t_sha256_ctx *ctx, const uint8_t *data, size_t len) {
-    size_t i = 0;
-
-    while (i < len)
-    {
-        ctx->buffer[ctx->buffer_len++] = data[i++];
-        if (ctx->buffer_len == 64)
-        {
-            DEBUG_PRINT("sha256: compressing full block\n");
-            sha256_compress(ctx, ctx->buffer);
-            ctx->buffer_len = 0;
-        }
-    }
+    ctx->debug_blocks = 0;
 }
 
 void sha256_update(void *state, const uint8_t *data, size_t len)
@@ -185,7 +187,7 @@ void sha256_update(void *state, const uint8_t *data, size_t len)
 
     sha256_update_raw(ctx, data, len);
     ctx->bitlen += (uint64_t)len * 8;
-    DEBUG_PRINT("sha256_update: +%zu bytes, bitlen now %lu, buffer_len=%zu\n", len, ctx->bitlen, ctx->buffer_len);
+    DEBUG_PRINT("sha256: received %zu bytes; bitlen=%lu; buffer_len=%zu\n", len, ctx->bitlen, ctx->buffer_len);
 }
 
 void sha256_final(void *state, uint8_t *out)
@@ -201,13 +203,11 @@ void sha256_final(void *state, uint8_t *out)
     pad = 0x80;
     zero = 0x00;
 
-    DEBUG_PRINT("sha256_final: original bitlen=%lu, leftover buffer_len=%zu\n", bitlen, ctx->buffer_len);
+    DEBUG_PRINT("sha256: finalizing message with original bitlen=%lu, buffer_len=%zu\n", bitlen, ctx->buffer_len);
     sha256_update_raw(ctx, &pad, 1);
-    DEBUG_PRINT("sha256_final: appended 0x80, buffer_len now %zu\n", ctx->buffer_len);
-
     while (ctx->buffer_len != 56)
         sha256_update_raw(ctx, &zero, 1);
-    DEBUG_PRINT("sha256_final: zero-padded to buffer_len=56\n");
+    DEBUG_PRINT("sha256: padding complete; buffer_len=%zu before length suffix\n", ctx->buffer_len);
 
     i = 7;
     while (i >= 0)
@@ -226,5 +226,5 @@ void sha256_final(void *state, uint8_t *out)
         out[i * 4 + 3] = (uint8_t)(ctx->state[i]);
         i++;
     }
-    DEBUG_PRINT("sha256_final: digest = %02x%02x%02x%02x...\n", out[0], out[1], out[2], out[3]);
+    DEBUG_PRINT("sha256: final digest prefix=%02x%02x%02x%02x\n", out[0], out[1], out[2], out[3]);
 }

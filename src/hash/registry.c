@@ -18,11 +18,12 @@ t_hash_module *get_hash_module(char *name)
     {
         if (strcmp(g_modules[i].name, name) == 0)
         {
-            DEBUG_PRINT("registry: found module \"%s\"\n", name);
+            DEBUG_PRINT("registry: resolved '%s' to hash module '%s' (%s)\n",
+                        name, g_modules[i].name, g_modules[i].label);
             return (&g_modules[i]);
         }
         i++;
     }
-    DEBUG_PRINT("registry: no module named \"%s\"\n", name);
+    DEBUG_PRINT("registry: no registered hash module for '%s'\n", name);
     return (NULL);
 }

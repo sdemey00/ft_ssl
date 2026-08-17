@@ -13,19 +13,18 @@ int dispatch_command(t_context *ctx, int argc, char **argv)
     }
     if (strcmp(argv[0], "help") == 0)
     {
-        usage();
-        help();
+        usage(); help();
         return (0);
     }
     mod = get_hash_module(argv[0]);
     if (!mod)
     {
-        DEBUG_PRINT("dispatch: unknown command \"%s\"\n", argv[0]);
+        DEBUG_PRINT("dispatch: command '%s' is not a registered hash module\n", argv[0]);
         dprintf(2, "ft_ssl: Error: '%s' is an invalid command.\n", argv[0]);
         help();
         return (1);
     }
-    DEBUG_PRINT("dispatch: resolved \"%s\" -> module\n", argv[0]);
+    DEBUG_PRINT("dispatch: command '%s' resolved to hash module '%s'\n", argv[0], mod->name);
     hash_handler(ctx, mod, argc - 1, argv + 1);
     return (0);
 }
