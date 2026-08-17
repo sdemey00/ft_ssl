@@ -36,7 +36,7 @@ void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
         mod->init(state);
         mod->update(state, data, len);
         mod->final(state, out);
-        // print_digest(...)
+        print_digest(ctx, mod, &exec.inputs[i], data, len, out);
         DEBUG_PRINT("hash: input[%d] digest computed (%zu bytes)\n", i, mod->digest_size);
         free(data);
         i++;

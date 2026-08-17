@@ -41,9 +41,20 @@ typedef struct s_exec
 }   t_exec;
 
 
+/*  
+Merkel-Damgard construction (shared paradigm)
+    1. Fixed initial state ("magic" constant (Initialization Vector)), specific to the algorithm.
+    2. Pad the message to a multiple of a fixed block size, in a way that encodes the original message length (Merkle-Damgard strengthening).
+    3. Split the padded message into fixed-size blocks.
+    4. Compression function: for each block, mix it into the current state to produce a new state. This is the actual "hashing", everything else is blockkeeping.
+    5. Final state, serialized = the digest.
+Every algorithm in this family is: what are the constants, what's the block size, and what does the compression function do internally.
+This maps directly onto t_hash_module interface (init/update/final)
+*/
 typedef struct s_hash_module
 {
-    char    *name;
+    char    *name;      // command name, e.g. "md5"
+    char    *label;     // display label, e.g. "MD5"
 
     void    (*init)(void *state);
     void    (*update)(void *state, const uint8_t *data, size_t len);
@@ -68,6 +79,11 @@ void            hash_handler(t_context *ctx, t_hash_module *mod, int argc, char 
 // PARSER
 int             parse_args(t_context *ctx, int argc, char **argv, t_exec *exec);
 
+// FORMATTER
+void print_digest(t_context *ctx, t_hash_module *mod, t_input *in,
+                   const uint8_t *data, size_t len, const uint8_t *digest);
+                   
+// INPUT
 typedef enum e_read_status
 {
     READ_OK,
@@ -75,7 +91,6 @@ typedef enum e_read_status
     READ_ERR_ALLOC
 }   t_read_status;
 
-// INPUT
 /* every reader returns a status and writes the buffer via an out-param. On error, *out is guaranteed NULL adn *len is 0. No uninitialized reads possible.*/
 t_read_status   read_input(t_input *in, uint8_t **out, size_t *len);
 t_read_status   read_file(char *path, uint8_t **out, size_t *len);

@@ -5,9 +5,9 @@
 
 static t_hash_module g_modules[] =
 {
-    {"md5",    md5_init,    md5_update,    md5_final,    MD5_DIGEST_SIZE,    sizeof(t_md5_ctx)},
-    {"sha256", sha256_init, sha256_update, sha256_final, SHA256_DIGEST_SIZE, sizeof(t_sha256_ctx)},
-    {NULL, NULL, NULL, NULL, 0, 0}
+    {"md5",     "MD5",      md5_init,       md5_update,     md5_final,      MD5_DIGEST_SIZE,    sizeof(t_md5_ctx)},
+    {"sha256",  "SHA256",   sha256_init,    sha256_update,  sha256_final,   SHA256_DIGEST_SIZE, sizeof(t_sha256_ctx)},
+    {NULL,      NULL,       NULL,           NULL,           NULL,           0,                  0}
 };
 
 t_hash_module *get_hash_module(char *name)

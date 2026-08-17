@@ -4,7 +4,7 @@
 # include <stdint.h>
 # include <stddef.h>
 
-# define SHA256_DIGEST_SIZE 16
+# define SHA256_DIGEST_SIZE 32
 
 typedef struct s_sha256_ctx
 {
