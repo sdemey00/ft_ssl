@@ -12,7 +12,9 @@ typedef struct s_md5_ctx
     uint64_t    bitlen;
     uint8_t     buffer[64];
     size_t      buffer_len;
+#if VERBOSE
     size_t      debug_blocks;
+#endif
 }   t_md5_ctx;
 
 void    md5_init(void *state);

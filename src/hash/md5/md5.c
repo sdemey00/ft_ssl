@@ -113,7 +113,9 @@ static void md5_update_raw(t_md5_ctx *ctx, const uint8_t *data, size_t len)
             DEBUG_PRINT("md5: compressing block #%zu (64-byte chunk)\n", ctx->debug_blocks);
             md5_compress(ctx, ctx->buffer);
             ctx->buffer_len = 0;
+#if VERBOSE
             ctx->debug_blocks++;
+#endif
         }
     }
 }
@@ -127,7 +129,9 @@ void    md5_init(void *state){
     ctx->state[3] = 0x10325476;
     ctx->bitlen = 0;
     ctx->buffer_len = 0;
+#if VERBOSE
     ctx->debug_blocks = 0;
+#endif
 }
 
 void md5_update(void *state, const uint8_t *data, size_t len)

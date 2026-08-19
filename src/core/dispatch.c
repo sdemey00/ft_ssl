@@ -25,6 +25,5 @@ int dispatch_command(t_context *ctx, int argc, char **argv)
         return (1);
     }
     DEBUG_PRINT("dispatch: command '%s' resolved to hash module '%s'\n", argv[0], mod->name);
-    hash_handler(ctx, mod, argc - 1, argv + 1);
-    return (0);
+    return (hash_handler(ctx, mod, argc - 1, argv + 1));
 }

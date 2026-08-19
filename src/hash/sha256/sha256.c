@@ -146,7 +146,9 @@ static void sha256_update_raw(t_sha256_ctx *ctx, const uint8_t *data, size_t len
             DEBUG_PRINT("sha256: compressing block #%zu (64-byte chunk)\n",
                         ctx->debug_blocks);
             sha256_compress(ctx, ctx->buffer);
+#if VERBOSE
             ctx->debug_blocks++;
+#endif
             ctx->buffer_len = 0;
         }
     }
@@ -178,7 +180,9 @@ void sha256_init(void *state)
     ctx->state[7] = 0x5be0cd19;
     ctx->bitlen = 0;
     ctx->buffer_len = 0;
+#if VERBOSE
     ctx->debug_blocks = 0;
+#endif
 }
 
 void sha256_update(void *state, const uint8_t *data, size_t len)

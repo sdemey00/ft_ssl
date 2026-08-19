@@ -20,7 +20,6 @@ typedef struct s_context {
   bool quiet;
   bool reverse;
   bool print_stdin;
-  bool saw_input;
 } t_context;
 
 typedef struct s_input
@@ -74,7 +73,7 @@ void    usage(void);
 t_hash_module   *get_hash_module(char *name);
 
 // HASH
-void            hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv);
+int             hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv);
 
 // PARSER
 int             parse_args(t_context *ctx, int argc, char **argv, t_exec *exec);
@@ -98,4 +97,5 @@ t_read_status   read_stdin(uint8_t **out, size_t *len);
 t_read_status   read_string(char *s, uint8_t **out, size_t *len);
 t_read_status   read_fd(int fd, uint8_t **out, size_t *len);
 
-# endif
+
+#endif

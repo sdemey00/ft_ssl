@@ -4,8 +4,7 @@ int main(int ac, char **av) {
   t_context ctx;
 
   init_context(&ctx);
-  dispatch_command(&ctx, ac - 1, av + 1);
-  return (0);
+  return (dispatch_command(&ctx, ac - 1, av + 1));
 }
 
 // commands: md5 sha256

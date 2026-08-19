@@ -1,7 +1,7 @@
 #include "ft_ssl.h"
 #include <stdlib.h>
 
-void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
+int hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
 {
     t_exec  exec;
     void    *state;
@@ -9,7 +9,7 @@ void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
     int     i;
 
     if (parse_args(ctx, argc, argv, &exec))
-        return ;
+        return (1);
     state = malloc(mod->state_size);
     out = malloc(mod->digest_size);
     if (!state || !out)
@@ -17,7 +17,7 @@ void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
         free(state);
         free(out);
         free(exec.inputs);
-        return;
+        return (1);
     }
     i = 0;
     while (i < exec.count)
@@ -31,7 +31,7 @@ void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
         DEBUG_PRINT("hash: input[%d] (%s): read_status=%d, bytes=%zu\n", i, label, status, len);
         if (status != READ_OK)
         {
-            dprintf(2, "ft_ssl: %s: %s\n", label,
+            dprintf(2, "ft_ssl: %s: %s: %s\n", mod->name, label,
                     status == READ_ERR_OPEN ? "No such file or directory" : "malloc error");
             i++;
             continue;
@@ -47,4 +47,5 @@ void hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
     free(state);
     free(out);
     free(exec.inputs);
+    return (0);
 }

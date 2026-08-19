@@ -12,7 +12,9 @@ typedef struct s_sha256_ctx
     uint64_t    bitlen;
     uint8_t     buffer[64];
     size_t      buffer_len;
+#if VERBOSE
     size_t      debug_blocks;
+#endif
 }   t_sha256_ctx;
 
 void    sha256_init(void *state);
