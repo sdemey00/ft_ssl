@@ -14,6 +14,7 @@ static const uint32_t g_r[64] =
     6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
 };
 
+// floor(2^32 × abs(sin(i)))
 static const uint32_t g_k[64] =
 {
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
@@ -38,6 +39,10 @@ static uint32_t leftrotate(uint32_t x, uint32_t c)
 {
     return ((x << c) | (x >> (32 - c)));
 }
+
+// 01 02 03 04
+// little-endian:
+// 0x04030201
 
 // consume exactly one 64-byte block, mixing it into ctx->state
 static void md5_compress(t_md5_ctx *ctx, const uint8_t *block)
@@ -68,28 +73,28 @@ static void md5_compress(t_md5_ctx *ctx, const uint8_t *block)
     {
         if (i < 16)
         {
-            f = (b & c) | (~b & d);
+            f = (b & c) | (~b & d);         // F(X,Y,Z) = XY ∨ ¬(X)Z
             g = i;
         }
         else if (i < 32)
         {
-            f = (d & b) | (~d & c);
-            g = (5 * i + 1) % 16;
+            f = (d & b) | (~d & c);         // G(X,Y,Z) = XZ ∨ Y¬Z
+            g = (5 * i + 1) % 16;           // 1 6 11 0 5 10 15 4 9 14 3 8 13 2 7 12
         }
         else if (i < 48)
         {
-            f = b ^ c ^ d;
-            g = (3 * i + 5) % 16;
+            f = b ^ c ^ d;                  // H(X,Y,Z) = X xor Y xor Z
+            g = (3 * i + 5) % 16;           // 5 8 11 14 1 4 7 10 13 0 3 6 9 12 15 2
         }
         else
         {
-            f = c ^ (b | ~d);
-            g = (7 * i) % 16;
+            f = c ^ (b | ~d);               // I(X,Y,Z) = Y xor (X ∨ not(Z))
+            g = (7 * i) % 16;               // 0 7 14 5 12 3 10 1 8 15 6 13 4 11 2 9
         }
         temp = d;
         d = c;
         c = b;
-        b = b + leftrotate(a + f + g_k[i] + w[g], g_r[i]);
+        b = b + leftrotate(a + f + g_k[i] + w[g], g_r[i]);      // B = B + ROTL(A + function(B,C,D) + T[i] + X[k], s)
         a = temp;
         i++;
     }
@@ -147,7 +152,7 @@ void md5_final(void *state, uint8_t *out)
 {
     t_md5_ctx *ctx = (t_md5_ctx *)state;
     uint64_t  bitlen = ctx->bitlen;
-    uint8_t   pad = 0x80;
+    uint8_t   pad = 0x80;           // 10000000
     uint8_t   zero = 0x00;
     int       i;
 
@@ -157,6 +162,7 @@ void md5_final(void *state, uint8_t *out)
     while (ctx->buffer_len != 56)
         md5_update_raw(ctx, &zero, 1);
     DEBUG_PRINT("md5: padding complete; buffer_len=%zu before length suffix\n", ctx->buffer_len);
+    // litle-endian
     i = 0;
     while (i < 8)
     {
@@ -164,6 +170,7 @@ void md5_final(void *state, uint8_t *out)
         md5_update_raw(ctx, &b, 1);
         i++;
     }
+    // digest begin with the low-order byte of A, and end with the high-order byte of D
     i = 0;
     while (i < 4)
     {
