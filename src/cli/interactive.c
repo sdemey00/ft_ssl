@@ -1,5 +1,6 @@
 #include "ft_ssl.h"
 #include <string.h>
+#include <errno.h>
 
 # define PROMPT     "ft_ssl> "
 # define LINE_MAX   4096
@@ -15,6 +16,8 @@ static int read_line(char *buf, size_t max)
     while (1)
     {
         r = read(STDIN_FILENO, &c, 1);
+        if (r < 0 && errno == EINTR)
+            return (-2);
         if (r <= 0)
         {
             if (i == 0)
@@ -51,6 +54,7 @@ int run_interactive(t_context *ctx)
     char        line[LINE_MAX];
     char        *argv[ARGV_MAX];
     int         argc;
+    int         status;
     const char  *banner;
 
     banner = "ft_ssl interactive mode. Type a command (e.g. \"md5\"), \"help\", or \"quit\".\n";
@@ -58,7 +62,13 @@ int run_interactive(t_context *ctx)
     while (1)
     {
         write(1, PROMPT, sizeof(PROMPT) - 1);
-        if (read_line(line, sizeof(line)) < 0)
+        status = read_line(line, sizeof(line));
+        if (status == -2)
+        {
+            write(1, "\nInterrupted.\n", 14);
+            break;
+        }
+        if (status == -1)
         {
             write(1, "\n", 1);
             break;

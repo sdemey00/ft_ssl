@@ -1,6 +1,7 @@
 #include "ft_ssl.h"
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/types.h>
 
 # define READ_CHUNK 4096
@@ -15,8 +16,20 @@ t_read_status read_fd(int fd, uint8_t **out, size_t *len)
 
     data = NULL;
     total = 0;
-    while ((r = read(fd, buffer, READ_CHUNK)) > 0)
+    while (1)
     {
+        r = read(fd, buffer, READ_CHUNK);
+        if (r < 0)
+        {
+            free(data);
+            *out = NULL;
+            *len = 0;
+            if (errno == EINTR)
+                return (READ_INTERRUPTED);
+            return (READ_ERR_OPEN);  // read() itself failed mid-stream
+        }
+        if (r == 0)
+            break;
         uint8_t *tmp = realloc(data, total + r);
         if (!tmp)
         {
@@ -28,13 +41,6 @@ t_read_status read_fd(int fd, uint8_t **out, size_t *len)
         data = tmp;
         memcpy(data + total, buffer, r);
         total += r;
-    }
-    if (r < 0)
-    {
-        free(data);
-        *out = NULL;
-        *len = 0;
-        return (READ_ERR_OPEN);  // read() itself failed mid-stream
     }
     *out = data;   // NULL if total == 0, which is fine, see read_input contract
     *len = total;

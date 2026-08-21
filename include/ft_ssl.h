@@ -6,6 +6,7 @@
 # include <stdint.h>
 # include <unistd.h>
 # include <stdio.h>
+# include <signal.h>
 
 #ifndef VERBOSE
 # define VERBOSE 0
@@ -70,6 +71,10 @@ void    help(void);
 void    usage(void);
 int     run_interactive(t_context *ctx);
 
+// SIGNALS
+extern volatile sig_atomic_t   g_interrupted;
+void    install_signal_handlers(void);
+
 // REGISTRY
 t_hash_module   *get_hash_module(char *name);
 
@@ -88,7 +93,8 @@ typedef enum e_read_status
 {
     READ_OK,
     READ_ERR_OPEN,
-    READ_ERR_ALLOC
+    READ_ERR_ALLOC,
+    READ_INTERRUPTED
 }   t_read_status;
 
 /* every reader returns a status and writes the buffer via an out-param. On error, *out is guaranteed NULL adn *len is 0. No uninitialized reads possible.*/
