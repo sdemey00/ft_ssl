@@ -68,6 +68,7 @@ int     dispatch_command(t_context *ctx, int argc, char **argv);
 void    init_context(t_context *ctx);
 void    help(void);
 void    usage(void);
+int     run_interactive(t_context *ctx);
 
 // REGISTRY
 t_hash_module   *get_hash_module(char *name);

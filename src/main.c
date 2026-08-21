@@ -1,10 +1,12 @@
 #include "ft_ssl.h"
 
-int main(int ac, char **av) {
+int main(int argc, char **argv) {
   t_context ctx;
 
   init_context(&ctx);
-  return (dispatch_command(&ctx, ac - 1, av + 1));
+  if (argc == 1 && isatty(STDIN_FILENO))
+    return (run_interactive(&ctx));
+  return (dispatch_command(&ctx, argc - 1, argv + 1));
 }
 
 // commands: md5 sha256

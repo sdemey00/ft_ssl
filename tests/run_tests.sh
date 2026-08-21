@@ -94,7 +94,7 @@ $BIN md5 -s >/dev/null 2>&1
 check "missing -s argument exits nonzero" "$?" "1"
 
 $BIN md5 /tmp/definitely_does_not_exist_xyz >/dev/null 2>&1
-check "nonexistent file (currently) exit code" "$?" "0"
+check "nonexistent file exits nonzero" "$?" "1"
 
 echo "== Multi-input ordering (subject transcript case) =="
 echo "and above all," > /tmp/ft_ssl_file2

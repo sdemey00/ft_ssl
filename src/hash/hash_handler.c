@@ -7,6 +7,7 @@ int hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
     void    *state;
     uint8_t *out;
     int     i;
+    bool    had_error;
 
     if (parse_args(ctx, argc, argv, &exec))
         return (1);
@@ -19,6 +20,7 @@ int hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
         free(exec.inputs);
         return (1);
     }
+    had_error = false;
     i = 0;
     while (i < exec.count)
     {
@@ -33,6 +35,7 @@ int hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
         {
             dprintf(2, "ft_ssl: %s: %s: %s\n", mod->name, label,
                     status == READ_ERR_OPEN ? "No such file or directory" : "malloc error");
+            had_error = true;
             i++;
             continue;
         }
@@ -47,5 +50,5 @@ int hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
     free(state);
     free(out);
     free(exec.inputs);
-    return (0);
+    return (had_error);
 }
