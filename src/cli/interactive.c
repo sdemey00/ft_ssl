@@ -36,14 +36,49 @@ static int read_line(char *buf, size_t max)
 static int tokenize(char *line, char **argv, int max_tokens)
 {
     int     argc;
-    char    *tok;
+    char    *src;
+    char    *dst;
+    char    *tok_end;
+    char    quote;
 
     argc = 0;
-    tok = strtok(line, " \t");
-    while (tok && argc < max_tokens - 1)
+    src = line;
+    dst = line;
+    while (*src && argc < max_tokens - 1)
     {
-        argv[argc++] = tok;
-        tok = strtok(NULL, " \t");
+        while (*src == ' ' || *src == '\t')
+            src++;
+        if (*src == '\0')
+            break;
+        argv[argc++] = dst;
+        quote = 0;
+        while (*src)
+        {
+            if (quote)
+            {
+                if (*src == quote)
+                {
+                    quote = 0;
+                    src++;
+                    continue;
+                }
+                *dst++ = *src++;
+                continue;
+            }
+            if (*src == '\'' || *src == '"')
+            {
+                quote = *src++;
+                continue;
+            }
+            if (*src == ' ' || *src == '\t')
+                break;
+            *dst++ = *src++;
+        }
+        tok_end = dst;
+        while (*src == ' ' || *src == '\t')
+            src++;
+        *tok_end = '\0';
+        dst = tok_end + 1;
     }
     argv[argc] = NULL;
     return (argc);
@@ -65,10 +100,12 @@ int run_interactive(t_context *ctx)
         status = read_line(line, sizeof(line));
         if (status == -2)
         {
-            write(1, "\nInterrupted.\n", 14);
-            break;
+            write(1, "\n", 1);
+            continue ;
+            // write(1, "\nInterrupted.\n", 14);
+            // break;
         }
-        if (status == -1)
+        if (status < 0)
         {
             write(1, "\n", 1);
             break;

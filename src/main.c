@@ -15,7 +15,7 @@ int main(int ac, char **av)
         return (128 + SIGINT);   // standard Unix convention for signal-terminated processes
     return (ret);
 }
-// commands: md5 sha256
+// commands: md5 sha256 whirlpool
 // flags: -p -q -r -s
 // -q quiet mode
 // -r reverse output
@@ -23,5 +23,5 @@ int main(int ac, char **av)
 // -s string labeling
 
 // t_hash_module = table of each hash module -> init/update/final/digest_size
-// one generic handler (e.g. in core/ or cli/) takes a t_hash_module * and does the parse -> read -> hash -> format -> print pipeline once
-// md5_handler/sha256_handler collapse into thin wrappers (or disappear entirely, dispatch_command looks up the module by name in the registry and calls the generic handler directly)
+// one generic handler (in core/) takes a t_hash_module * and does the parse -> read -> hash -> format -> print pipeline once
+// md5_handler/sha256_handler collapse into thin wrappers (dispatch_command looks up the module by name in the registry and calls the generic handler directly)
