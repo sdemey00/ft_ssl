@@ -20,7 +20,7 @@ DEPS	= $(OBJS:.o=.d)
 
 # Fake targets
 .PHONY: clean fclean re norm \
-		san valgrind clear
+		san valgrind clear verbose
 
 MAKEFLAGS += --no-print-directory
 
@@ -47,7 +47,7 @@ san: FLAGS += -g -fsanitize=address,leak,undefined
 san: all
 
 valgrind:
-	valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./$(NAME) $(F)
+	valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./$(NAME)
 
 verbose: fclean
 	$(MAKE) V=1

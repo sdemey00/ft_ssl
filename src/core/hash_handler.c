@@ -34,7 +34,7 @@ int hash_handler(t_context *ctx, t_hash_module *mod, int argc, char **argv)
         if (status != READ_OK)
         {
             dprintf(2, "ft_ssl: %s: %s: %s\n", mod->name, label,
-                    status == READ_ERR_OPEN ? "No such file or directory" : "malloc error");
+                    status == READ_ERR_OPEN ? "No such file or directory" : "Interrupted.");
             had_error = true;
             i++;
             continue;

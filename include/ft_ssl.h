@@ -94,7 +94,8 @@ typedef enum e_read_status
     READ_OK,
     READ_ERR_OPEN,
     READ_ERR_ALLOC,
-    READ_INTERRUPTED
+    READ_INTERRUPTED,
+    READ_MALLOC_ERROR
 }   t_read_status;
 
 /* every reader returns a status and writes the buffer via an out-param. On error, *out is guaranteed NULL adn *len is 0. No uninitialized reads possible.*/
