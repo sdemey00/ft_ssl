@@ -69,11 +69,6 @@ static void sha256_compress(t_sha256_ctx *ctx, const uint8_t *block)
     uint32_t t1, t2;
     int      i;
 
-    /*
-     * SHA-256 is BIG-ENDIAN.
-     *
-     * block[0] is the HIGH byte of w[0].
-     */
     i = 0;
     while (i < 16)
     {
@@ -84,9 +79,7 @@ static void sha256_compress(t_sha256_ctx *ctx, const uint8_t *block)
         i++;
     }
 
-    /*
-     * Expand 16 words -> 64 words.
-     */
+    // Expand 16 words -> 64 words.
     while (i < 64)
     {
         w[i] = small_sigma1(w[i - 2])
@@ -157,8 +150,8 @@ static void sha256_update_raw(t_sha256_ctx *ctx, const uint8_t *data, size_t len
 /*
 MD5                         SHA-256
 ------------------------------------------------
-w[16]                       w[64]
-little endian               big endian
+w[16]                        w[64]
+little endian                big endian
 a b c d                      a b c d e f g h
 4 state words                8 state words
 64 rounds                    64 rounds
