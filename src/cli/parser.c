@@ -52,13 +52,20 @@ static bool flag_s(t_context *ctx, t_exec *exec, char *arg)
     return add_input(exec, (t_input){INPUT_STRING, arg});
 }
 
+static bool flag_doc(t_context *ctx, t_exec *exec, char *arg) {
+    (void)ctx;(void)exec;(void)arg;
+    ctx->print_doc = true;
+    return true;
+}
+
 static t_flag g_flags[] =
 {
-    {"-p", false, flag_p},
-    {"-q", false, flag_q},
-    {"-r", false, flag_r},
-    {"-s", true,  flag_s},
-    {NULL, false, NULL}
+    {"-p",      false,  flag_p},
+    {"-q",      false,  flag_q},
+    {"-r",      false,  flag_r},
+    {"-s",      true,   flag_s},
+    {"-doc",    false,  flag_doc},
+    {NULL,      false,  NULL}
 };
 
 static t_flag *find_flag(char *name)

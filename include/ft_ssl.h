@@ -21,6 +21,7 @@ typedef struct s_context {
   bool quiet;
   bool reverse;
   bool print_stdin;
+  bool print_doc;
 } t_context;
 
 typedef struct s_input
