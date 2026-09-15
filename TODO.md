@@ -1,6 +1,7 @@
 # ADD
 - sha1 hash function
 - -doc flag to print per-algorithm documentation
+- sources and AI usage in README
 
 # FIX
 - clean files (especially the ft_ssl.h)
