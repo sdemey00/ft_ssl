@@ -1,4 +1,4 @@
-# ft_ssl
+# ft_ssl (in progress)
 A from-scratch reimplementation of core `OpenSSL` hashing functionality in C: `md5`, `sha256` and `whirlpool`. Built with an architecture design to make adding new algorithms trivial rather than a rewrite.
 ```
 $ echo "42 is nice" | ./ft_ssl md5
